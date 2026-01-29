@@ -1,17 +1,27 @@
 import { getCollectionProducts } from "lib/shopify";
+import type { Product } from "lib/shopify/types";
 import Link from "next/link";
 import { GridTileImage } from "./grid/tile";
 
-export async function Carousel() {
-  // Collections that start with `hidden-*` are hidden from the search page.
-  const products = await getCollectionProducts({
-    collection: "hidden-homepage-carousel",
-  });
+export async function Carousel({
+  products,
+}: {
+  products?: Product[];
+} = {}) {
+  const resolvedProducts =
+    products ??
+    (await getCollectionProducts({
+      collection: "hidden-homepage-carousel",
+    }));
 
-  if (!products?.length) return null;
+  if (!resolvedProducts?.length) return null;
 
   // Purposefully duplicating products to make the carousel loop and not run out of products on wide screens.
-  const carouselProducts = [...products, ...products, ...products];
+  const carouselProducts = [
+    ...resolvedProducts,
+    ...resolvedProducts,
+    ...resolvedProducts,
+  ];
 
   return (
     <div className="w-full overflow-x-auto pb-6 pt-1">
